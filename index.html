@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI工房マップ — まとんと仲間たちの体系図</title>
+<style>
+  :root{
+    --ink:#22303c; --sub:#5f7484; --line:#d5dde3; --bg:#f2f6f4; --card:#ffffff;
+    --green:#2e7d32; --green-l:#e8f5e9;
+    --music:#7b5cbf; --music-l:#f1eafb;
+    --art:#e07a2e;   --art-l:#fdf0e2;
+    --d3:#1f8a99;    --d3-l:#e2f4f6;
+    --game:#c94f6d;  --game-l:#fbe9ee;
+    --pub:#3566c4;   --pub-l:#e7eefb;
+    --night:#40407a; --night-l:#ebebf7;
+    --mem:#8a6d1f;   --mem-l:#faf3dc;
+    --paid:#c62828;  --free:#2e7d32;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:"Yu Gothic UI","Meiryo",system-ui,sans-serif; background:var(--bg); color:var(--ink); line-height:1.65;}
+  #errbar{display:none;background:#c0392b;color:#fff;padding:8px 14px;font-size:13px;white-space:pre-wrap;}
+
+  header{background:linear-gradient(120deg,#1b5e20,#2e7d32 60%,#43a047); color:#fff; padding:22px 26px 18px;}
+  header h1{font-size:23px; letter-spacing:.04em;}
+  header .sub{font-size:13px; opacity:.92; margin-top:4px;}
+  header .hint{display:inline-block; margin-top:10px; font-size:12.5px; background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.45); border-radius:18px; padding:3px 14px;}
+
+  .layout{display:flex; gap:16px; padding:16px; max-width:1500px; margin:0 auto; align-items:flex-start;}
+  main{flex:1 1 60%; min-width:0;}
+  aside{flex:0 0 38%; position:sticky; top:12px; max-height:calc(100vh - 24px); overflow-y:auto;}
+
+  section{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px 16px; margin-bottom:14px;}
+  section h2{font-size:15.5px; color:var(--green); border-left:5px solid var(--green); padding-left:9px; margin-bottom:4px;}
+  section .lead{font-size:12px; color:var(--sub); margin-bottom:10px;}
+
+  .item{cursor:pointer; transition:box-shadow .15s, transform .1s; position:relative;}
+  .item:hover{box-shadow:0 3px 10px rgba(0,0,0,.16); transform:translateY(-1px);}
+  .item.active{outline:3px solid #f59f00; outline-offset:1px;}
+  .item::after{content:"＋"; position:absolute; top:3px; right:7px; font-size:11px; color:var(--sub); opacity:.65;}
+  .item.active::after{content:"▶"; color:#f59f00;}
+
+  .flow{display:grid; grid-template-columns:repeat(auto-fill,minmax(215px,1fr)); gap:10px;}
+  .fcard{border:2px solid; border-radius:12px; padding:10px 12px;}
+  .fcard .want{font-size:12px; color:var(--sub);}
+  .fcard .tool{font-size:16.5px; font-weight:bold; margin:2px 0;}
+  .fcard .via{font-size:11.5px; color:var(--sub);}
+  .badges{margin-top:6px; display:flex; flex-wrap:wrap; gap:4px;}
+  .bd{font-size:10.5px; border-radius:8px; padding:1px 8px; color:#fff; white-space:nowrap;}
+  .bd-paid{background:var(--paid);} .bd-free{background:var(--free);}
+  .bd-skill{background:#455a64;} .bd-lib{background:var(--mem);}
+  .bd-routine{background:var(--night);} .bd-mem{background:#7a5c9e;}
+  .c-music{border-color:var(--music); background:var(--music-l);} .c-music .tool{color:var(--music);}
+  .c-art{border-color:var(--art); background:var(--art-l);} .c-art .tool{color:var(--art);}
+  .c-d3{border-color:var(--d3); background:var(--d3-l);} .c-d3 .tool{color:var(--d3);}
+  .c-game{border-color:var(--game); background:var(--game-l);} .c-game .tool{color:var(--game);}
+  .c-pub{border-color:var(--pub); background:var(--pub-l);} .c-pub .tool{color:var(--pub);}
+  .c-mem{border-color:var(--mem); background:var(--mem-l);} .c-mem .tool{color:var(--mem);}
+
+  .team{display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:10px;}
+  .tcard{border:2px solid var(--line); border-radius:12px; padding:9px 12px; background:#fbfdfc;}
+  .tcard .nm{font-weight:bold; font-size:14.5px;}
+  .tcard .rl{font-size:11.5px; color:var(--sub);}
+  .tcard.maton{border-color:var(--green); background:var(--green-l);}
+
+  .tl{position:relative; margin-left:8px; padding-left:18px; border-left:3px solid var(--night);}
+  .tstep{position:relative; padding:5px 8px 5px 10px; margin-bottom:6px; background:var(--night-l); border-radius:8px; font-size:12.5px;}
+  .tstep::before{content:""; position:absolute; left:-25px; top:12px; width:11px; height:11px; border-radius:50%; background:var(--night); border:2px solid #fff;}
+  .tstep b{color:var(--night);}
+  .tstep .who{font-size:11px; color:var(--sub);}
+
+  .places{display:grid; grid-template-columns:repeat(auto-fill,minmax(215px,1fr)); gap:10px;}
+  .pcard{border:2px dashed var(--line); border-radius:12px; padding:9px 12px; background:#fcfdfd;}
+  .pcard .nm{font-weight:bold; font-size:13.5px;}
+  .pcard .ds{font-size:11.5px; color:var(--sub);}
+
+  table.pay{width:100%; border-collapse:collapse; font-size:12.5px;}
+  table.pay th{background:var(--green-l); color:var(--green); padding:6px 8px; text-align:left; border-bottom:2px solid var(--green);}
+  table.pay td{padding:6px 8px; border-bottom:1px solid var(--line);}
+  table.pay tr.item::after{content:none;}
+
+  .panel{background:#fff; border:2px solid var(--green); border-radius:14px; overflow:hidden; box-shadow:0 4px 14px rgba(0,0,0,.08);}
+  .panel-head{background:var(--green); color:#fff; padding:11px 15px; font-size:14.5px; font-weight:bold;}
+  .panel-body{padding:14px 16px; font-size:13px;}
+  .panel-body h4{color:var(--green); font-size:13px; margin:11px 0 3px; border-bottom:1px dashed var(--line); padding-bottom:2px;}
+  .panel-body h4:first-child{margin-top:0;}
+  .panel-body ul{padding-left:19px; margin:3px 0;}
+  .panel-body p{margin:3px 0;}
+  .panel-body .point{background:var(--green-l); border-left:4px solid var(--green); padding:7px 9px; border-radius:6px; margin:8px 0; font-size:12.5px;}
+  .panel-body .warn{background:#fdecea; border-left:4px solid var(--paid); padding:7px 9px; border-radius:6px; margin:8px 0; font-size:12.5px;}
+  .panel-body code{background:#eef2f0; border-radius:4px; padding:1px 5px; font-size:11.5px;}
+  .panel-empty{color:var(--sub); text-align:center; padding:28px 10px; font-size:13px;}
+  .panel-empty .big{font-size:32px; margin-bottom:6px;}
+
+  footer{text-align:center; font-size:11px; color:var(--sub); padding:8px 0 22px;}
+  @media (max-width:920px){ .layout{flex-direction:column;} aside{position:static; width:100%; max-height:none; flex:none; order:-1;} }
+</style>
+</head>
+<body>
+<div id="errbar"></div>
+<script>window.onerror=function(m,s,l){var e=document.getElementById("errbar");e.style.display="block";e.textContent+="エラー: "+m+" (行:"+l+")\n";};</script>
+
+<header>
+  <h1>🗺️ AI工房マップ — まとんと仲間たちの体系図</h1>
+  <div class="sub">趣味のAI工房（ゲーム制作×音楽×画像×3D）の全体図 — 「何かをしたい」→「何を使う」が一目で分かる</div>
+  <div class="hint">💡 「＋」つきのカードをクリックすると、右の説明ボックスに詳細が表示されます</div>
+</header>
+
+<div class="layout">
+<main>
+
+  <section>
+    <h2>① やりたいこと → 使う道具</h2>
+    <div class="lead">まず既存ライブラリの再利用を検討 → 無ければ生成、が全カテゴリ共通の考え方。</div>
+    <div class="flow">
+      <div class="fcard c-music item" data-key="music">
+        <div class="want">🎵 音楽・BGM・ジングルが欲しい</div>
+        <div class="tool">Suno</div>
+        <div class="via">＋ 音楽ライブラリ（33曲）から再利用</div>
+        <div class="badges"><span class="bd bd-paid">💳 Pro課金済</span><span class="bd bd-skill">🛠 suno-music</span><span class="bd bd-lib">📚 目録あり</span></div>
+      </div>
+      <div class="fcard c-art item" data-key="art">
+        <div class="want">🎨 キャラ絵・画像・ドット絵が欲しい</div>
+        <div class="tool">なのばなな</div>
+        <div class="via">＋ デザインライブラリ（約140枚）から再利用</div>
+        <div class="badges"><span class="bd bd-paid">💳 課金済(Gemini)</span><span class="bd bd-skill">🛠 design-library</span><span class="bd bd-lib">📚 目録あり</span></div>
+      </div>
+      <div class="fcard c-d3 item" data-key="d3">
+        <div class="want">🧊 3Dモデルが欲しい</div>
+        <div class="tool">Meshy ＋ Kenney</div>
+        <div class="via">まず四天王GLB→背景物はKenney無料→一点物だけMeshy</div>
+        <div class="badges"><span class="bd bd-paid">💳 Meshy Pro済</span><span class="bd bd-free">🆓 Kenney CC0</span><span class="bd bd-lib">📚 3D 15体+</span></div>
+      </div>
+      <div class="fcard c-game item" data-key="game">
+        <div class="want">🎮 ゲームを作りたい・改良したい</div>
+        <div class="tool">単一HTML制作</div>
+        <div class="via">新規=テンプレから制作／改良=毎晩の自動ルーチン</div>
+        <div class="badges"><span class="bd bd-skill">🛠 スキル2種</span><span class="bd bd-routine">🌙 毎晩自動改良</span><span class="bd bd-mem">🧠 進行表</span></div>
+      </div>
+      <div class="fcard c-pub item" data-key="pub">
+        <div class="want">🌐 公開したい・どこでも見たい</div>
+        <div class="tool">GitHub Pages ＋ クラウド同期</div>
+        <div class="via">URL公開＋自動バックアップ</div>
+        <div class="badges"><span class="bd bd-free">🆓 無料</span><span class="bd bd-skill">🛠 github-upload</span><span class="bd bd-routine">🔁 毎朝自動同期</span></div>
+      </div>
+      <div class="fcard c-mem item" data-key="mem">
+        <div class="want">🧠 覚えておいてほしい・思い出してほしい</div>
+        <div class="tool">メモリ（永続記憶）</div>
+        <div class="via">プロジェクト状況・ルール・手順を自動で記憶</div>
+        <div class="badges"><span class="bd bd-mem">🧠 常時稼働</span><span class="bd bd-free">🆓 標準機能</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>② 制作チーム（AIが演じ分ける4人の職人）</h2>
+    <div class="lead">クリックで担当範囲を表示。深夜は時間差で自動出勤。</div>
+    <div class="team">
+      <div class="tcard maton item" data-key="maton"><div class="nm">🐻 まとん</div><div class="rl">案内役・検品・採点・進行管理</div></div>
+      <div class="tcard item" data-key="senno"><div class="nm">📜 榊原千唐</div><div class="rl">ゲーム性（音楽と絵以外ぜんぶ）</div></div>
+      <div class="tcard item" data-key="maki"><div class="nm">🎵 石坂真希</div><div class="rl">音楽（Suno・WebAudio）</div></div>
+      <div class="tcard item" data-key="mizuki"><div class="nm">🎨 井上瑞季</div><div class="rl">画像・3D（なのばなな・Meshy）</div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>③ 夜の自動ルーチン（寝ている間に進む仕事）</h2>
+    <div class="lead">PCはつけっぱなし（モニターオフ）でOK。朝には新バージョンと報告が届く。</div>
+    <div class="tl">
+      <div class="tstep item" data-key="r045"><b>0:45</b> PC自動起床 <span class="who">Windowsタスク</span></div>
+      <div class="tstep item" data-key="r100"><b>1:00</b> ゲーム性の改善 <span class="who">榊原千唐（1ゲーム・約10分）</span></div>
+      <div class="tstep item" data-key="r200"><b>2:00</b> 音楽の改善＋3Dワールド毎日パワーアップ <span class="who">石坂真希／専用タスク</span></div>
+      <div class="tstep item" data-key="r300"><b>3:00</b> 画像・演出の改善 <span class="who">井上瑞季</span></div>
+      <div class="tstep item" data-key="r400"><b>4:00</b> 検品・採点・ランキング・クラウド同期 <span class="who">まとん統括</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>④ 課金状況まとめ</h2>
+    <div class="lead">行をクリックで料金感と使いどころ。</div>
+    <table class="pay">
+      <tr><th>サービス</th><th>状態</th><th>役割</th></tr>
+      <tr class="item" data-key="pay-suno"><td>Suno</td><td>💳 Pro課金済</td><td>音楽生成（商用OK・月2500クレジット）</td></tr>
+      <tr class="item" data-key="pay-nano"><td>なのばなな（Gemini）</td><td>💳 課金済</td><td>画像生成（API直呼び・稼働中）</td></tr>
+      <tr class="item" data-key="pay-meshy"><td>Meshy</td><td>💳 Pro課金済</td><td>3D生成（1体約30クレジット≒90円）</td></tr>
+      <tr class="item" data-key="pay-kenney"><td>Kenney素材</td><td>🆓 無料CC0</td><td>プロ品質の3D/2D素材（クレジット表記も不要）</td></tr>
+      <tr class="item" data-key="pay-free"><td>GitHub / クラウド</td><td>🆓 無料枠</td><td>公開（Pages）／PC間の同期・バックアップ</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2>⑤ 保管場所マップ（どこに何があるか）</h2>
+    <div class="lead">迷子になったらここ。クリックで中身。</div>
+    <div class="places">
+      <div class="pcard item" data-key="pl-desktop"><div class="nm">🖥️ デスクトップ</div><div class="ds">全作品の最新版だけ（1作品1ファイル）</div></div>
+      <div class="pcard item" data-key="pl-cload"><div class="nm">📦 作業倉庫（cload_tmp）</div><div class="ds">素材庫・旧版・開発ソース・目録</div></div>
+      <div class="pcard item" data-key="pl-drive"><div class="nm">☁️ クラウド</div><div class="ds">作品の写しを毎朝自動同期</div></div>
+      <div class="pcard item" data-key="pl-skill"><div class="nm">🛠 スキル置き場</div><div class="ds">自作スキル（決まった頼み方で自動発動）</div></div>
+      <div class="pcard item" data-key="pl-mem"><div class="nm">🧠 メモリ</div><div class="ds">AIの永続記憶（毎会話で自動読込）</div></div>
+    </div>
+  </section>
+
+</main>
+
+<aside>
+  <div class="panel">
+    <div class="panel-head" id="panel-title">📖 説明ボックス</div>
+    <div class="panel-body" id="panel-body">
+      <div class="panel-empty"><div class="big">👈</div>左の「＋」つきカードをクリックすると、<br>ここに詳しい説明が表示されます。</div>
+    </div>
+  </div>
+</aside>
+</div>
+
+<footer>AI工房マップ（公開版）／ Claude（AI）と二人三脚で運営する趣味の制作工房の全体図です</footer>
+
+<script>
+const D = {
+  music:{t:"🎵 音楽が欲しいとき",b:`
+    <h4>考え方（この順で）</h4>
+    <ol style="padding-left:20px"><li><b>音楽ライブラリから再利用</b>（0円・即納品）— 過去に作った33曲が雰囲気タグつきで目録化されている（和風・ボス戦・癒し・ジングル等の早見表あり）</li>
+    <li>足りない分だけ<b>Sunoで新規生成</b>（ブラウザ自動操作で全自動）</li><li>短いジングル程度なら<b>WebAudio</b>でコード直書き（0円）</li></ol>
+    <h4>頼み方</h4><p>「〇〇にBGMつけて」「ボス曲作って」→ 音楽スキルが自動発動</p>
+    <div class="point">Suno Pro課金済み＝商用利用OK。生成した曲は必ずライブラリに追加され、資産が育ち続ける仕組み。</div>`},
+  art:{t:"🎨 画像・キャラ絵が欲しいとき",b:`
+    <h4>考え方（この順で）</h4>
+    <ol style="padding-left:20px"><li><b>デザインライブラリから再利用</b> — 2D約140枚（ドット絵戦闘機・モンスター・顔グラ・背景等）が目録化されている</li>
+    <li>無ければ<b>なのばなな（Gemini画像生成）</b>で新規生成 — スクリプト経由でAIが直接呼べる</li></ol>
+    <h4>頼み方</h4><p>「〇〇のキャラ描いて」「顔グラ作って」→ デザインスキルが自動発動</p>
+    <div class="point">課金済み・稼働中。キャラの一貫性維持（元画像を渡して編集）も可能。</div>`},
+  d3:{t:"🧊 3Dモデルが欲しいとき",b:`
+    <h4>考え方（この順で・お財布にやさしい順）</h4>
+    <ol style="padding-left:20px"><li>⭐<b>3D四天王を流用</b>（0円）— 猫の騎士・いぬの侍・うさぎの魔法使い・きつねの巫女。実績ある高品質GLBモデル</li>
+    <li><b>Kenney無料素材</b>（0円・CC0）— 木・家・岩など背景小物330点＋住宅21種</li>
+    <li>一点物だけ<b>Meshy生成</b>（約90円/体）— なのばななで原画→image-to-3DでGLB化</li></ol>
+    <div class="point">Meshy Pro課金済み。GLBは重い（10〜30MB）ので、HTMLに埋めるときは体数とサイズを報告するルール。</div>`},
+  game:{t:"🎮 ゲームを作る・改良するとき",b:`
+    <h4>新しく作る</h4><p>「作って:〇〇」→ ゲームループ・状態遷移・効果音・パーティクル込みのテンプレから開始</p>
+    <h4>今あるゲームを良くする</h4><p>「ゲームレベルアップ」→ 三人のディレクター→実装→評価基準15項目で再採点→進行表更新</p>
+    <h4>お約束</h4>
+    <ul><li>単一HTMLファイル・新バージョンは_vNN別名保存（上書き禁止）</li><li>デスクトップは最新1本だけ、旧版は倉庫へ</li><li>プレイテストは人間担当（エラーは画面上部の赤帯で報告）</li></ul>
+    <div class="point">現在12ゲームを毎晩自動改良中。目標=全ゲーム総合8.0点以上。</div>`},
+  pub:{t:"🌐 公開したい・どこでも見たいとき",b:`
+    <h4>URLで誰でも遊べるようにする</h4><p>「GitHubに上げて」→ 公開準備→大容量分割→push→Pages有効化まで自動。100MB超はファイル分割で対応。</p>
+    <h4>どこでも見る</h4><p>クラウド同期を導入済み。デスクトップの全作品が毎朝4時に自動でクラウドへコピーされる（新バージョンだけコピー・旧版は自動片付け）。</p>`},
+  mem:{t:"🧠 メモリ（AIの永続記憶）",b:`
+    <h4>何が保存されているか</h4>
+    <ul><li>各ゲーム・作品の最新状況（版数・機能・ソースの場所）</li><li>ワークフロー（音楽/画像/3D/公開の手順と課金状況）</li><li>ルール（版管理・片付け・ライブラリ制・テストは人間）</li><li>チーム設定（まとんの名前・三人のディレクター）</li></ul>
+    <div class="point">「これ覚えておいて」と言えば追記される。会話をまたいでも前提を説明し直す必要がないのはこの仕組みのおかげ。</div>`},
+
+  maton:{t:"🐻 まとん（案内役）",b:`
+    <p>飼い主が昔からゲームで使ってきた愛着ある名前を授かった、工房の進行役AI。</p>
+    <h4>担当</h4><ul><li>日中のご指名作業（改修・相談ごと全般）</li><li>毎朝4時の統括: 夜の3人の成果を検品→採点→ランキング報告→クラウド同期</li><li>進行表・評価基準の管理、トラブル対応</li></ul>`},
+  senno:{t:"📜 榊原千唐（ゲーム性担当）",b:`
+    <p>担当は「音楽とデザイン以外ぜんぶ」＝バランス・テンポ・はまり要素・物語・導入・難易度・操作性・視認性。</p>
+    <h4>評価軸</h4><p>S1導入/S2物語/S3難易度/S4操作性/S5楽しさ（各2点・計10点）</p>
+    <h4>勤務</h4><p>毎晩1:00に自動出勤。点数が最も低いゲームを約10分で改善（例: セーブ実装・世界観ロア・詰み警告）。</p>`},
+  maki:{t:"🎵 石坂真希（音楽担当）",b:`
+    <p>Sunoでの本格BGMからWebAudioの手書きジングルまで。評価軸=M1専用曲/M2場面切替/M3ジングル/M4効果音/M5世界観調和。</p>
+    <h4>勤務</h4><p>毎晩2:00に自動出勤（夜は安全のためSuno生成は封印、WebAudio改善のみ。Suno生成は昼に人間と一緒に）。</p>
+    <h4>実績</h4><p>音楽ライブラリ33曲の作曲者。</p>`},
+  mizuki:{t:"🎨 井上瑞季（画像・3D担当）",b:`
+    <p>なのばなな作画・Meshy 3D化・パーティクル演出。評価軸=D1専用素材/D2演出/D3UI/D4空間表現/D5モバイル対応。</p>
+    <h4>勤務</h4><p>毎晩3:00に自動出勤。デザインが最低点のゲームに演出強化や素材組込を約10分で実施。素材はまずライブラリから再利用がルール。</p>`},
+
+  r045:{t:"0:45 PC自動起床",b:`
+    <p>Windowsタスクスケジューラが<b>スリープからPCを起こし</b>、約5時まで寝かせない（画面は消えたまま）。夜勤チームの出勤準備。</p>`},
+  r100:{t:"1:00 榊原千唐の夜勤",b:`<p>予約タスクが自動起動。進行表のスコアボードで「ゲーム性」最低点のゲームを選び、約10分の集中改善→新バージョン保存→進行表更新→3行報告。</p>`},
+  r200:{t:"2:00 石坂真希の夜勤＋3Dワールド",b:`<p>音楽最低点のゲームをWebAudioで改善する音楽タスクと、3Dワールドを毎日評価→改善3つ→新版保存する専用タスクが並走。</p>`},
+  r300:{t:"3:00 井上瑞季の夜勤",b:`<p>デザイン最低点のゲームにパーティクル強化や素材組込。素材生成は許可済みの安全な呼び方だけを使うルール。</p>`},
+  r400:{t:"4:00 まとん統括",b:`
+    <p>夜の総仕上げ:</p>
+    <ol style="padding-left:20px"><li>全ゲームの版チェック（日中作業の取りこぼしも回収）</li><li>新バージョンの構文検品</li><li>総合点の再計算・ランキング・一言評価の更新</li><li>クラウドへ自動同期（新版コピー＋旧版片付け）</li><li>朝の報告書を作成</li></ol>`},
+
+  "pay-suno":{t:"Suno（音楽生成）💳",b:`<p><b>Proプラン課金済み</b>。月2500クレジット・同時約10ジョブ・<b>商用利用OK</b>。</p><p>1回のCreateで2テイク生成。BGMは「full 2 minute loop」指定で60〜150秒に安定。</p>`},
+  "pay-nano":{t:"なのばなな＝Gemini画像生成 💳",b:`<p><b>課金済み・稼働中</b>。スクリプト経由でAIが直接呼ぶ（人間の操作不要）。</p><p>キャラ再現（元画像＋編集指示）、アスペクト比指定、複数枚生成に対応。</p>`},
+  "pay-meshy":{t:"Meshy（3D生成）💳",b:`<p><b>Proプラン課金済み</b>。1体約30クレジット≒<b>約90円</b>。テキスト→3Dと画像→3D（なのばななの絵を立体化）の両対応。</p><div class="warn">5体を超える大量生成は事前確認するルール。</div>`},
+  "pay-kenney":{t:"Kenney素材 🆓",b:`<p>ゲーム素材の老舗サイト（kenney.nl）。<b>すべてCC0＝無料・商用OK・クレジット表記不要</b>。</p><p>取得済み: 自然物330点・郊外住宅21種・中世の町168点。</p><div class="point">3Dの背景小物はMeshyより先にここから選ぶのがお得。</div>`},
+  "pay-free":{t:"GitHub / クラウド 🆓",b:`<p><b>GitHub Pages</b>: 無料でURL公開（「URLを開くだけで遊べる」形）。100MB超ファイルは分割対応。</p><p><b>クラウド同期</b>: 無料枠内。作品のバックアップとPC間の共有に使用。</p>`},
+
+  "pl-desktop":{t:"🖥️ デスクトップ",b:`<p>全作品の<b>最新版だけ</b>を置く場所（1作品1ファイルの約束）。ゲーム12本＋資料HTML。</p><div class="point">ここに置いたHTMLは毎朝4時に自動でクラウドへ同期される。</div>`},
+  "pl-cload":{t:"📦 作業倉庫（cload_tmp）",b:`
+    <ul><li><b>音楽ライブラリ</b> … 曲33＋目録</li><li><b>デザイン素材庫</b> … 2D素材＋目録</li><li><b>3Dモデル置き場</b> … 四天王ほか15体</li><li><b>Kenney素材</b> … 無料3D素材3パック</li><li><b>ゲームレベルアップ</b> … 進行表・評価基準</li><li><b>各ゲームのフォルダ</b> … 旧バージョンの退避先・開発ソース</li></ul>`},
+  "pl-drive":{t:"☁️ クラウド同期",b:`
+    <p>クラウドドライブを導入済み。デスクトップの作品が毎朝4時に自動でコピーされ、外出先やスマホからも最新版が見られる。</p>
+    <div class="point">新バージョンだけをコピーし、古い版は自動で片付ける「常に最新1本」運用。</div>`},
+  "pl-skill":{t:"🛠 スキル置き場（自作の技）",b:`
+    <p>スキル＝「決まった頼み方をすると自動発動する作業手順書」。主な自作スキル:</p>
+    <ul><li><b>game-levelup</b> … 毎日のゲーム改良ルーチン</li><li><b>suno-music</b> … 音楽生成→組込（ライブラリ優先）</li><li><b>design-library</b> … 画像・3D素材（ライブラリ優先）</li><li><b>github-upload</b> … 公開ワークフロー</li><li><b>zundamon-video</b> … ずんだもん音声（VOICEVOX）で解説・読み聞かせ動画</li></ul>
+    <p>＋ ゲーム新規作成テンプレほか標準スキル群</p>`},
+  "pl-mem":{t:"🧠 メモリ（永続記憶）",b:`
+    <p>会話が変わっても、まとんが「12ゲームの状況」「課金済みサービス」「お約束ごと」を覚えているのはここのおかげ。</p>
+    <h4>主な記憶</h4><ul><li>各プロジェクトの最新版と特殊事情</li><li>ワークフロー手順（音楽・画像・3D・公開・同期）</li><li>ルール（版管理・ライブラリ制など）</li><li>まとん・三人のディレクターの設定</li></ul>`}
+};
+const titleEl=document.getElementById('panel-title'), bodyEl=document.getElementById('panel-body');
+let current=null;
+document.querySelectorAll('.item').forEach(el=>{
+  el.addEventListener('click', ev=>{
+    ev.stopPropagation();
+    const d=D[el.dataset.key]; if(!d) return;
+    if(current) current.classList.remove('active');
+    el.classList.add('active'); current=el;
+    titleEl.textContent=d.t; bodyEl.innerHTML=d.b;
+    if(window.innerWidth<=920) document.querySelector('aside').scrollIntoView({behavior:'smooth'});
+  });
+});
+</script>
+</body>
+</html>
