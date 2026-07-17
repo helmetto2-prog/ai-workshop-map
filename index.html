@@ -15,6 +15,7 @@
     --pub:#3566c4;   --pub-l:#e7eefb;
     --night:#40407a; --night-l:#ebebf7;
     --mem:#8a6d1f;   --mem-l:#faf3dc;
+    --voice:#5aa02c; --voice-l:#eef7e2;
     --paid:#c62828;  --free:#2e7d32;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
@@ -56,6 +57,7 @@
   .c-game{border-color:var(--game); background:var(--game-l);} .c-game .tool{color:var(--game);}
   .c-pub{border-color:var(--pub); background:var(--pub-l);} .c-pub .tool{color:var(--pub);}
   .c-mem{border-color:var(--mem); background:var(--mem-l);} .c-mem .tool{color:var(--mem);}
+  .c-voice{border-color:var(--voice); background:var(--voice-l);} .c-voice .tool{color:var(--voice);}
 
   .team{display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:10px;}
   .tcard{border:2px solid var(--line); border-radius:12px; padding:9px 12px; background:#fbfdfc;}
@@ -136,6 +138,12 @@
         <div class="tool">単一HTML制作</div>
         <div class="via">新規=テンプレから制作／改良=毎晩の自動ルーチン</div>
         <div class="badges"><span class="bd bd-skill">🛠 スキル2種</span><span class="bd bd-routine">🌙 毎晩自動改良</span><span class="bd bd-mem">🧠 進行表</span></div>
+      </div>
+      <div class="fcard c-voice item" data-key="voice">
+        <div class="want">🎬 喋る動画・ナレーション・読み聞かせが欲しい</div>
+        <div class="tool">ずんだもん（VOICEVOX）</div>
+        <div class="via">解説動画=zundamon-video／喋るアニメ=anime-video</div>
+        <div class="badges"><span class="bd bd-free">🆓 VOICEVOX無料</span><span class="bd bd-skill">🛠 スキル2種</span><span class="bd bd-lib">🔧 ffmpeg導入済</span></div>
       </div>
       <div class="fcard c-pub item" data-key="pub">
         <div class="want">🌐 公開したい・どこでも見たい</div>
@@ -240,6 +248,13 @@ const D = {
     <h4>お約束</h4>
     <ul><li>単一HTMLファイル・新バージョンは_vNN別名保存（上書き禁止）</li><li>デスクトップは最新1本だけ、旧版は倉庫へ</li><li>プレイテストは人間担当（エラーは画面上部の赤帯で報告）</li></ul>
     <div class="point">現在12ゲームを毎晩自動改良中。目標=全ゲーム総合8.0点以上。</div>`},
+  voice:{t:"🎬 喋る動画・ナレーションが欲しいとき",b:`
+    <h4>使う道具</h4><p><b>ずんだもん（VOICEVOX）</b>＝無料の音声合成ソフト。ずんだもん・四国めたん等のキャラ音声をローカルで量産できる。</p>
+    <h4>2つのスキルで作り分け</h4>
+    <ul><li><b>ナレーション動画・読み聞かせ・解説</b>（ずんだもんが喋るだけ）→ <b>zundamon-video</b>スキル。VOICEVOXで音声生成→ffmpegで動画に組立</li>
+    <li><b>キャラが会話する短編アニメ・PV・ドラマ仕立て</b>→ <b>anime-video</b>スキル。台本→一貫キャラのカット量産→動画化→口パク＋音声</li></ul>
+    <h4>頼み方</h4><p>「ずんだもんに〇〇喋らせて」「〇〇の解説動画作って」「読み聞かせ動画にして」→ 自動発動</p>
+    <div class="point">VOICEVOX・yt-dlp・ffmpegは導入済み。全て無料。</div>`},
   pub:{t:"🌐 公開したい・どこでも見たいとき",b:`
     <h4>URLで誰でも遊べるようにする</h4><p>「GitHubに上げて」→ 公開準備→大容量分割→push→Pages有効化まで自動。100MB超はファイル分割で対応。</p>
     <h4>どこでも見る</h4><p>クラウド同期を導入済み。デスクトップの全作品が毎朝4時に自動でクラウドへコピーされる（新バージョンだけコピー・旧版は自動片付け）。</p>`},
