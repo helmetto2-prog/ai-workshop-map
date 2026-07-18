@@ -116,10 +116,10 @@
     <div class="lead">まず既存ライブラリの再利用を検討 → 無ければ生成、が全カテゴリ共通の考え方。</div>
     <div class="flow">
       <div class="fcard c-music item" data-key="music">
-        <div class="want">🎵 音楽・BGM・ジングルが欲しい</div>
-        <div class="tool">Suno</div>
-        <div class="via">＋ 音楽ライブラリ（33曲）から再利用</div>
-        <div class="badges"><span class="bd bd-paid">💳 Pro課金済</span><span class="bd bd-skill">🛠 suno-music</span><span class="bd bd-lib">📚 目録あり</span></div>
+        <div class="want">🎵 音楽・BGM・効果音が欲しい</div>
+        <div class="tool">Suno ＋ 効果音ライブラリ</div>
+        <div class="via">曲=音楽ライブラリ33曲／SE=ZzFX+Kenney345個+効果音ラボ</div>
+        <div class="badges"><span class="bd bd-paid">💳 Suno Pro済</span><span class="bd bd-free">🆓 効果音は無料</span><span class="bd bd-skill">🛠 suno-music / se-library</span></div>
       </div>
       <div class="fcard c-art item" data-key="art">
         <div class="want">🎨 キャラ絵・画像・ドット絵が欲しい</div>
@@ -130,8 +130,8 @@
       <div class="fcard c-d3 item" data-key="d3">
         <div class="want">🧊 3Dモデルが欲しい</div>
         <div class="tool">Meshy ＋ Kenney</div>
-        <div class="via">まず四天王GLB→背景物はKenney無料→一点物だけMeshy</div>
-        <div class="badges"><span class="bd bd-paid">💳 Meshy Pro済</span><span class="bd bd-free">🆓 Kenney CC0</span><span class="bd bd-lib">📚 3D 15体+</span></div>
+        <div class="via">まず四天王GLB→背景物はKenney無料→一点物だけMeshy／重いGLBはgltfpackで96%減</div>
+        <div class="badges"><span class="bd bd-paid">💳 Meshy Pro済</span><span class="bd bd-free">🆓 Kenney CC0</span><span class="bd bd-free">🗜 gltfpack軽量化</span></div>
       </div>
       <div class="fcard c-game item" data-key="game">
         <div class="want">🎮 ゲームを作りたい・改良したい</div>
@@ -229,7 +229,12 @@ const D = {
     <ol style="padding-left:20px"><li><b>音楽ライブラリから再利用</b>（0円・即納品）— 過去に作った33曲が雰囲気タグつきで目録化されている（和風・ボス戦・癒し・ジングル等の早見表あり）</li>
     <li>足りない分だけ<b>Sunoで新規生成</b>（ブラウザ自動操作で全自動）</li><li>短いジングル程度なら<b>WebAudio</b>でコード直書き（0円）</li></ol>
     <h4>頼み方</h4><p>「〇〇にBGMつけて」「ボス曲作って」→ 音楽スキルが自動発動</p>
-    <div class="point">Suno Pro課金済み＝商用利用OK。生成した曲は必ずライブラリに追加され、資産が育ち続ける仕組み。</div>`},
+    <h4>効果音（SE）は専用ライブラリ（全部無料）</h4>
+    <ol style="padding-left:20px"><li><b>ZzFX</b> — 1.2KBのJSシンセ。コイン・爆発・ジャンプ等を「1行1音」で生成、ファイル埋込不要</li>
+    <li><b>Kenney音源345個</b>（CC0） — クリック・打撃・レトロ音の既製品</li>
+    <li><b>効果音ラボ</b> — 斬撃・魔法・咆哮など生っぽい音（商用無料）</li></ol>
+    <h4>頼み方</h4><p>「〇〇にBGMつけて」→ suno-music／「効果音つけて」→ se-libraryスキルが自動発動</p>
+    <div class="point">Suno Pro課金済み＝商用利用OK。曲もSEも必ずライブラリに追加され、資産が育ち続ける仕組み。</div>`},
   art:{t:"🎨 画像・キャラ絵が欲しいとき",b:`
     <h4>考え方（この順で）</h4>
     <ol style="padding-left:20px"><li><b>デザインライブラリから再利用</b> — 2D約140枚（ドット絵戦闘機・モンスター・顔グラ・背景等）が目録化されている</li>
@@ -241,7 +246,9 @@ const D = {
     <ol style="padding-left:20px"><li>⭐<b>3D四天王を流用</b>（0円）— 猫の騎士・いぬの侍・うさぎの魔法使い・きつねの巫女。実績ある高品質GLBモデル</li>
     <li><b>Kenney無料素材</b>（0円・CC0）— 木・家・岩など背景小物330点＋住宅21種</li>
     <li>一点物だけ<b>Meshy生成</b>（約90円/体）— なのばななで原画→image-to-3DでGLB化</li></ol>
-    <div class="point">Meshy Pro課金済み。GLBは重い（10〜30MB）ので、HTMLに埋めるときは体数とサイズを報告するルール。</div>`},
+    <h4>重いGLBはgltfpackで軽量化（無料・MIT）</h4>
+    <p>実測で<b>18.4MB→0.79MB（96%減）</b>。再生用デコーダを埋め込んでも合計600KB程度の追加で済む。</p>
+    <div class="point">Meshy Pro課金済み。GLBは重い（10〜30MB）ので、HTMLに埋めるときは体数とサイズを報告するルール。重くなったらgltfpackの出番。</div>`},
   game:{t:"🎮 ゲームを作る・改良するとき",b:`
     <h4>新しく作る</h4><p>「作って:〇〇」→ ゲームループ・状態遷移・効果音・パーティクル込みのテンプレから開始</p>
     <h4>今あるゲームを良くする</h4><p>「ゲームレベルアップ」→ 三人のディレクター→実装→評価基準15項目で再採点→進行表更新</p>
